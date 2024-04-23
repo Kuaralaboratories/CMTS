@@ -22,12 +22,62 @@
 ]]
 
 ---@module LuaSQL-SQLite3
-local db = require "luasql.sqlite3"
+db = require("luasql.sqlite3")
+env = db.sqlite3()
+maindDbFile = "maindb.sqlite"
 
-local env = db.sqlite3()
-local maindDbFile = "maindb.sqlite"
+local function createMainDatabase(id, token, tableName, columns)
+    local conn = env:connect(maindDbFile)
+    local request = string.format("CREATE TABLE IF NOT EXISTS %s (%s)", tableName, table.concat(columns, ", "))
+    conn:execute(request) 
+    conn:close()
+end
 
 local function generateSuperAdminTokenAndId()
+    local charset = "abcdl345@JKLMNO$#,TUVstuvwXYxyzABWZ0.!efghijk*?/6789{(GHIPS1}opqr])QR[mnCDEF2~"
+    local token = ""
+    local id = ""
+
+    -- 256 char length token
+    for i = 1, 256 do
+        local char = charset:sub(math.random(1, #charset), math.random(1, #charset))
+        token = token .. char
+    end
+
+    -- 16 digit length id
+    for i = 1, 16 do
+        local digit = tostring(math.random(0, 9))
+        id = id .. digit
+    end
+    
+    return token, id
+end
+
+-- Create the super-admin
+local superAdminToken, superAdminId = generateSuperAdminTokenAndId()
+
+createSuperAdmin = function()
+    local tableName = "initial"
+    local columns = {"id INTEGER PRIMARY KEY", "name TEXT", "surname TEXT", "age INTEGER"}
+    
+    local token, id = generateSuperAdminTokenAndId() -- Assign the returned values
+    
+    createMainDatabase(id, token, tableName, columns) 
+end
+
+createSuperAdmin()
+
+local preDefinedUsers = {
+    {id = 1, username = "kullanici1", token = "token1"},
+    {id = 2, username = "kullanici2", token = "token2"},
+    {id = 3, username = "kullanici3", token = "token3"}
+}
+
+local databaseCount = 0
+local users = {}
+
+-- Bu fonksiyonda usertoken oluşturulurken zorunlu olarak admin tokenı kullanılmalı.
+createUserTokens = function()
     local charset = "abcdl345@JKLMNO$#,TUVstuvwXYxyzABWZ0.!efghijk*?/6789{(GHIPS1}opqr])QR[mnCDEF2~"
     local token = ""
     local id = ""
@@ -46,18 +96,6 @@ local function generateSuperAdminTokenAndId()
 
     return token, id
 end
-
--- Create the super-admin
-local superAdminToken, superAdminId = generateSuperAdminTokenAndId()
-
-local preDefinedUsers = {
-    {id = 1, username = "kullanici1", token = "token1"},
-    {id = 2, username = "kullanici2", token = "token2"},
-    {id = 3, username = "kullanici3", token = "token3"}
-}
-
-local databaseCount = 0
-local users = {}
 
 ---@param tableName string
 ---@param columns string
@@ -257,6 +295,12 @@ local function addUser(userId, username, token)
     -- Yeni kullanıcıyı ekleyelim
     users[userId] = {username = username, token = token}
 
+    -- create database for user
+    local dbFile = username .. ".sqlite"
+    local db = env:connect(dbFile)
+    db:execute("PRAGMA foreign_keys = ON") -- Enable foreign key support
+    db:close()
+    
     databaseCount = databaseCount + 1
 end
 
@@ -280,6 +324,7 @@ end
 for _, userData in ipairs(preDefinedUsers) do
     addUser(userData.id, userData.username, userData.token)
 end
+--[[
 
 -- Kullanıcıları ekrana yazdıran fonksiyon
 local function printUsers()
@@ -299,3 +344,4 @@ print("\nVeritabanı dosya adları:")
 for _, dbFile in ipairs(dbFiles) do
     print(dbFile)
 end
+]]
