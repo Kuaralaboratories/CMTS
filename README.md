@@ -1,10 +1,10 @@
-# CMTS (Cognitio Multi-Tenant SQLite3) Library
+# CMTS (Cognitios Multi-Tenant SQLite3) Library
 
 CMTS is a library designed for creating isolated databases for each user in a multi-tenancy environment. Each isolated database is encrypted with a unique key, adhering to the Zero Trust security concept.
 
 ## Introduction
 
-CMTS (Cognitio Multi-Tenant SQLite3) Library is a powerful tool for developers working on multi-tenant applications where data isolation and security are paramount. It allows developers to create and manage isolated SQLite3 databases for each user seamlessly.
+CMTS (Cognitios Multi-Tenant SQLite3) Library is a powerful tool for developers working on multi-tenant applications where data isolation and security are paramount. It allows developers to create and manage isolated SQLite3 databases for each user seamlessly.
 
 ## Features
 
@@ -54,4 +54,4 @@ CMTS employs industry-standard encryption techniques to secure user data. Howeve
 
 ## Conclusion
 
-CMTS (Cognitio Multi-Tenant SQLite3) Library is an indispensable tool for developers building multi-tenant applications. With its robust features and adherence to security best practices, CMTS simplifies the process of managing isolated databases while ensuring data privacy and security for each user.
+CMTS (Cognitios Multi-Tenant SQLite3) Library is an indispensable tool for developers building multi-tenant applications. With its robust features and adherence to security best practices, CMTS simplifies the process of managing isolated databases while ensuring data privacy and security for each user.
